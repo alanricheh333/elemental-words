@@ -1,46 +1,70 @@
-import { ELEMENTS, testSet } from "./data";
+import { ELEMENTS } from "./data";
 
-const s = "catsanddog";
-const wordDict = ["cat","cats","and","sand","dog"]
-
+/**
+ * Define Interface for datatype dictionary
+ * */
 interface Dictionary<T> {
     [Key: string]: T;
 }
 
-function wordBreak(s:string, wordDict: string[]): string[] {
+/**
+ * Gives the elemental forms that can be formed by letters of a certain word
+ * @param word: string representing the inspected word
+ * @returns list of arrays (each one represent the combination of elements formed) with each item as the elemental name + element symbol
+ */
+function elementalForms(word:string): string[][] {
 
-    let wordSet = wordDict;
+    //get the elements data object and convert it to dict
+    var elementsDict: Dictionary<string>;
+    elementsDict = ELEMENTS;
 
+    //extract the keys of the dict object
+    let elementsSet = Object.keys(elementsDict);
+
+    //define the dict of suffixes
     let memo: Dictionary<string[][]> = {}
 
-    function _wordBreak_topdown(s:string) {
-        if (s === "") {
+    /**
+     * Breakes the word top down way, gets the suffixes as keys and list of arrays of prefixes combinations as values
+     * @param suffix: string representing the remaining suffix of the word
+     * @returns the memo as dict of suffixes as keys and list of arrays of elements combinations as value
+     */
+    function wordBreakTopDown(suffix:string) {
+        //if empty string return empty list
+        if (suffix === "") {
             return [[]]
         }
 
-        if (s in memo) {
-            return memo[s];
+        //check if suffix is already in memo
+        if (suffix in memo) {
+            return memo[suffix];
         } else {
-            memo[s] = [];
+            memo[suffix] = [];
         }
 
-        for(let endIndex = 1; endIndex <= s.length; ++endIndex) {
+        //iterate over suffix size
+        for(let endIndex = 1; endIndex <= suffix.length; ++endIndex) {
             
-            let word = s.substring(0, endIndex);
-            if (word.length > 3) continue;
+            //get letters from suffix
+            let letters = suffix.substring(0, endIndex);
+            if (letters.length > 3) continue;
+            
             //convert the letters to lowercase then make the first letter uppercase
-            word = word.toLocaleLowerCase();
-            word = word.charAt(0).toUpperCase() + word.slice(1);
+            letters = letters.toLocaleLowerCase();
+            letters = letters.charAt(0).toUpperCase() + letters.slice(1);
 
-            if (wordSet.includes(word)){
+            //check if elements set contains the combination of letters
+            if (elementsSet.includes(letters)){
                 
-                let subsentences = _wordBreak_topdown(s.substring(endIndex));
+                //recrusively call the break top down function on the remaining part of the word
+                let subsentences = wordBreakTopDown(suffix.substring(endIndex));
             
                 if (subsentences != undefined) {
+                    //form the combiniation of letters and add it to the memo with the current suffix
                     for(var sub of subsentences) {
                         var newSentence = JSON.parse(JSON.stringify(sub));
-                        newSentence.push(word);
-                        memo[s].push(newSentence);
+                        newSentence.push(letters);
+                        memo[suffix].push(newSentence);
                     }
                 }
             }
@@ -48,27 +72,31 @@ function wordBreak(s:string, wordDict: string[]): string[] {
             
         }
         
-        return memo[s];
+        return memo[suffix];
     }
     
-    _wordBreak_topdown(s);
+    wordBreakTopDown(word);
 
     //in case of empty string passed
-    if (!memo[s]) return [];
+    if (!memo[word]) return [];
 
-    let ret = [];
+    let result = [];
 
-    for(let words of memo[s]) {
+    //iterate over the combinations of elements of only the word as a suffix
+    for(let words of memo[word]) {
         
-        let sentence = "";
+        //form the elemental form array
+        let elementalFromsArray = [];
         for(let w of words) {
-            sentence = sentence.slice(0,0) + w + " " + sentence.slice(0);
+            let element = elementsDict[w];
+            let sentence = element + " (" + w + ")";
+            elementalFromsArray.unshift(sentence);
         }
-        sentence = sentence.slice(0, -1);
-        ret.push(sentence);
+        //push the array to the result array
+        result.push(elementalFromsArray);
     }
 
-    return ret;
+    return result;
 }
 
-console.log(wordBreak("snack", testSet));
+console.log(elementalForms("snack"));
