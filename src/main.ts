@@ -1,3 +1,5 @@
+import { ELEMENTS, testSet } from "./data";
+
 const s = "catsanddog";
 const wordDict = ["cat","cats","and","sand","dog"]
 
@@ -25,7 +27,11 @@ function wordBreak(s:string, wordDict: string[]): string[] {
         for(let endIndex = 1; endIndex <= s.length; ++endIndex) {
             
             let word = s.substring(0, endIndex);
-            
+            if (word.length > 3) continue;
+            //convert the letters to lowercase then make the first letter uppercase
+            word = word.toLocaleLowerCase();
+            word = word.charAt(0).toUpperCase() + word.slice(1);
+
             if (wordSet.includes(word)){
                 
                 let subsentences = _wordBreak_topdown(s.substring(endIndex));
@@ -47,6 +53,9 @@ function wordBreak(s:string, wordDict: string[]): string[] {
     
     _wordBreak_topdown(s);
 
+    //in case of empty string passed
+    if (!memo[s]) return [];
+
     let ret = [];
 
     for(let words of memo[s]) {
@@ -62,5 +71,4 @@ function wordBreak(s:string, wordDict: string[]): string[] {
     return ret;
 }
 
-
-console.log(wordBreak(s, wordDict));
+console.log(wordBreak("snack", testSet));
