@@ -12,7 +12,7 @@ interface Dictionary<T> {
  * @param word: string representing the inspected word
  * @returns list of arrays (each one represent the combination of elements formed) with each item as the elemental name + element symbol
  */
-function elementalForms(word:string): string[][] {
+export function elementalForms(word:string): string[][] {
 
     //get the elements data object and convert it to dict
     var elementsDict: Dictionary<string>;
@@ -96,7 +96,8 @@ function elementalForms(word:string): string[][] {
         result.push(elementalFromsArray);
     }
 
+    console.log(result);
     return result;
 }
 
-console.log(elementalForms("snack"));
+//console.log(elementalForms("snack"));

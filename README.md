@@ -42,3 +42,7 @@ To run the project please follow these steps:
 
 
 2. To change the element map object, go to src/data.ts and change the ELEMENTS object.
+
+
+## Running the test cases
+To run the test cases just type `jest` in terminal.
